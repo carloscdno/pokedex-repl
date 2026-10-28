@@ -1,0 +1,28 @@
+import type { State } from "./state.js";
+
+export async function commandCatch(
+  state: State,
+  ...args: string[]
+): Promise<void> {
+  const pokemonName = args[0];
+
+  if (!pokemonName) {
+    console.log("Please provide a Pokemon name.");
+    return;
+  }
+
+  console.log(`Throwing a Pokeball at ${pokemonName}...`);
+
+  const pokemon = await state.pokeAPI.fetchPokemon(pokemonName);
+
+  const catchChance = 100 / (100 + pokemon.base_experience);
+  const caught = Math.random() < catchChance;
+
+  if (caught) {
+    state.pokedex[pokemon.name] = pokemon;
+    console.log(`${pokemon.name} was caught!`);
+    console.log("You may now inspect it with the inspect command")
+  } else {
+    console.log(`${pokemon.name} escaped!`);
+  }
+}
